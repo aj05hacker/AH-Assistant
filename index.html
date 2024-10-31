@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Conversation Bot</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        #chatContainer { width: 500px; margin: auto; }
+        #messages { height: 300px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; }
+        .message { margin: 5px 0; }
+        .user { text-align: right; }
+        .bot { text-align: left; }
+        input[type="text"] { width: 80%; }
+    </style>
+</head>
+<body>
+    <div id="chatContainer">
+        <h1>AI Conversation Bot</h1>
+        <div id="messages"></div>
+        <input type="text" id="prompt" placeholder="Ask a question...">
+        <button id="sendBtn">Send</button>
+    </div>
+
+    <script>
+        document.getElementById('sendBtn').addEventListener('click', async () => {
+            const prompt = document.getElementById('prompt').value;
+            addMessage(prompt, 'user');
+            document.getElementById('prompt').value = '';
+
+            const response = await fetch('/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: prompt })
+            });
+
+            const data = await response.json();
+            addMessage(data.response, 'bot');
+        });
+
+        function addMessage(content, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.textContent = content;
+            document.getElementById('messages').appendChild(messageDiv);
+        }
+    </script>
+</body>
+</html>
